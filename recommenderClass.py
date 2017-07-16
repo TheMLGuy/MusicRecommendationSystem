@@ -16,7 +16,10 @@ class popularityRecommender():
         #item id corresponds to each unique songs, obj is to obtain 
         #count of user ids for each unique song
         grouped_train_data=train_data.groupby([self.item_id]).agg({self.user_id:'count'}).reset_index()
-        grouped_train_data.rename(columns={'user_id':'score'}, inplace=True)    
+        print("printing 2 rows of training data")
+        
+        grouped_train_data.rename(columns={'user_id':'score'}, inplace=True)
+        print(grouped_train_data.head(2))
         
         #sort songs based on column score
         grouped_sorted_data=grouped_train_data.sort_values(['score',self.item_id],ascending=[0,1])
