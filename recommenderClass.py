@@ -22,7 +22,7 @@ class popularityRecommender():
         print(grouped_train_data.head(2))
         
         #sort songs based on column score
-        grouped_sorted_data=grouped_train_data.sort_values(['score',self.item_id],ascending=[0,1])
+        grouped_sorted_data=grouped_train_data.sort_values(['score'],ascending=0)
         
         #generate a rank based on score
         grouped_sorted_data['rank']=grouped_sorted_data['score'].rank(ascending=0,method='first')
@@ -33,7 +33,13 @@ class popularityRecommender():
     #popularity based recommender models just return the top preferred
     #suggestions irrespective of users likes
     def recommend(self,user_id):
-        return self.popularity_recommendations
+        user_recommendations=self.popularity_recommendations
+        user_recommendations['user_id']=user_id
+        print("generating recommendations for user_id {}".format(user_id))
+        cols=user_recommendations.columns.tolist()
+        cols=cols[-1:]+cols[:-1]
+        user_recommendations=user_recommendations[cols]
+        return user_recommendations
 
 class item_similarity_recommender():
     def __init__():
