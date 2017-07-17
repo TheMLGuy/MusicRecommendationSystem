@@ -42,7 +42,7 @@ class popularityRecommender():
         return user_recommendations
 
 class item_similarity_recommender():
-    def __init__():
+    def __init__(self):
         self.train_data=None
         self.user_id=None
         self.item_id=None
@@ -58,18 +58,18 @@ class item_similarity_recommender():
     
     def get_unique_users_for_song(self,item):
         item_data=self.train_data[self.train_data[self.item_id]==item]
-        unique_users=list(item_data[self.user_id].unique())
+        unique_users=set(item_data[self.user_id].unique())
         return unique_users
     
     def get_all_items_train_data(self):
         all_items=list(self.train_data[self.item_id].unique())
         return all_items
     
-    def construct_coccurence_matrix(self,user_songs,all_songs):
+    def construct_cooccurence_matrix(self,user_songs,all_songs):
         # get list of users for all songs
         user_songs_list=[]
         for i in range(len(user_songs)):
-            user_songs_list.append(get_unique_songs_for_user(user_songs[i]))
+            user_songs_list.append(self.get_unique_users_for_song(user_songs[i]))
         
         coocurence_matrix=np.matrix(np.zeros(shape=(len(user_songs), len(all_songs))),float)
         
@@ -88,19 +88,19 @@ class item_similarity_recommender():
                 else:
                     coocurence_matrix[j,i]=0
                     
-        return cooccurence_matrix
+        return coocurence_matrix
     
     def generate_top_recommendations(self,user,coocurence_matrix,all_songs,user_songs):
         print("non zero value in coocurence matrix {}".format(np.count_nonzero(coocurence_matrix)))
         
-        user_sim_scores=cooccurence_matrix.sum(axis=0)/float(cooccurence_matrix.shape[0])
+        user_sim_scores=coocurence_matrix.sum(axis=0)/float(coocurence_matrix.shape[0])
         user_sim_scores=np.array(user_sim_scores)[0].tolist()
         
         sort_index=sorted(((e,i) for i,e in enumerate(list(user_sim_scores))),reverse=True)
                           
         
         columns=['user_id','song','score','rank']
-        df=pandas.DataFrame(columns=columns)
+        df=pd.DataFrame(columns=columns)
         
         rank=1                
         for i in range(len(sort_index)):
@@ -118,7 +118,8 @@ class item_similarity_recommender():
         self.train_data = train_data
         self.user_id = user_id
         self.item_id = item_id
-
+        
+        
     #Use the item similarity based recommender system model to
     #make recommendations
     def recommend(self, user):
@@ -126,7 +127,7 @@ class item_similarity_recommender():
         ########################################
         #A. Get all unique songs for this user
         ########################################
-        user_songs = self.get_user_items(user)    
+        user_songs = self.get_unique_songs_for_user(user)
             
         print("No. of unique songs for the user: %d" % len(user_songs))
         
